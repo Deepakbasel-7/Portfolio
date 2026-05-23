@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{NAME}} — Portfolio</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="logo">&lt;{{FIRST}} /&gt;</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#resume">Resume</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-tag">$ init_portfolio.py — {{ROLE}}</p>
+  <h1 class="hero-name">{{FIRST}}<br><em>{{LAST}}</em></h1>
+  <p class="hero-sub">{{TAGLINE}}</p>
+  <div class="hero-btns">
+    <a href="#projects" class="btn btn-p">View My Work</a>
+    <a href="#contact"  class="btn btn-g">Get in Touch</a>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- ABOUT -->
+<section class="wrap" id="about">
+  <p class="s-label">01 // about_me</p>
+  <h2 class="s-title">Who I Am</h2>
+  <div class="about-grid">
+    <div class="about-text"><p>{{ABOUT}}</p></div>
+    <div class="stats">{{STATS_HTML}}</div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- SKILLS -->
+<section class="wrap" id="skills">
+  <p class="s-label">02 // skill_set</p>
+  <h2 class="s-title">What I Work With</h2>
+  <div class="skills-grid">{{SKILLS_HTML}}</div>
+</section>
+
+<hr class="div"/>
+
+<!-- PROJECTS -->
+<section class="wrap" id="projects">
+  <p class="s-label">03 // projects</p>
+  <h2 class="s-title">Things I've Built</h2>
+  <div class="cards">{{PROJECTS_HTML}}</div>
+</section>
+
+<hr class="div"/>
+
+<!-- RESUME -->
+<section class="wrap" id="resume">
+  <p class="s-label">04 // resume</p>
+  <h2 class="s-title">My Resume</h2>
+  <div class="resume-box">
+    <div>
+      <h3>Full CV — Updated 2025</h3>
+      <p>A complete overview of my work experience, education, and accomplishments.</p>
+    </div>
+    <a href="/static/resume.pdf" class="btn btn-p" download>↓ Download PDF</a>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- CONTACT -->
+<section class="wrap" id="contact">
+  <p class="s-label">05 // contact</p>
+  <h2 class="s-title">Get In Touch</h2>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p>Whether you have a project in mind, a role to fill, or just want to connect — my inbox is always open. I'll respond within 24 hours.</p>
+      <div class="c-links">
+        <a href="mailto:{{EMAIL}}" class="c-link"><div class="c-ico">✉</div>{{EMAIL}}</a>
+        <a href="{{GITHUB}}" target="_blank" class="c-link"><div class="c-ico">⌥</div>{{GITHUB_SHORT}}</a>
+        <a href="{{LINKEDIN}}" target="_blank" class="c-link"><div class="c-ico">in</div>{{LINKEDIN_SHORT}}</a>
+      </div>
+    </div>
+    <form class="form" onsubmit="send(event)">
+      <div><label>Name</label><input type="text" placeholder="Jane Smith" required/></div>
+      <div><label>Email</label><input type="email" placeholder="jane@example.com" required/></div>
+      <div><label>Message</label><textarea placeholder="Tell me about your project..." required></textarea></div>
+      <button type="submit" class="btn btn-p" style="width:fit-content">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>Built with <span>Python</span> + zero dependencies</p>
+  <p>© 2025 <span>{{NAME}}</span></p>
+</footer>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
