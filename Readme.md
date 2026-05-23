@@ -9,3 +9,10 @@ Structure:
 Run:   python3 portfolio.py
 Open:  http://localhost:8080
 """
+
+"""
+Portfolio Backend — Flask
+Run:   pip install flask  →  python app.py
+Site:  http://localhost:5000
+Admin: http://localhost:5000/admin  (login required)
+"""

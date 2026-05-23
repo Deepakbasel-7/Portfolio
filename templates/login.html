@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Login — Deepak Bashyal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #f5f3ef;
+      --bg2:     #eceae4;
+      --surface: #ffffff;
+      --border:  #e0ddd6;
+      --tx:      #1a1814;
+      --tx2:     #4a4742;
+      --mu:      #8a877f;
+      --ac:      #2d5a3d;
+      --ac2:     #c8a96e;
+      --ac-light:#e8f0eb;
+      --danger:  #c0392b;
+      --danger-light: #fdf0ef;
+      --serif:   'Playfair Display', Georgia, serif;
+      --sans:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* subtle grid */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 3rem 2.8rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 40px rgba(26,24,20,0.1);
+      animation: fadeUp .45s ease both;
+    }
+
+    .card-top {
+      text-align: center;
+      margin-bottom: 2.2rem;
+    }
+
+    .avatar {
+      width: 56px; height: 56px;
+      background: var(--ac-light);
+      border: 2px solid rgba(45,90,61,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.2rem;
+    }
+
+    .card-top h1 {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 0.3rem;
+    }
+
+    .card-top p {
+      font-size: 0.85rem;
+      color: var(--mu);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--tx2);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .input-wrap { position: relative; }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--tx);
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--ac);
+      box-shadow: 0 0 0 3px rgba(45,90,61,0.1);
+      background: var(--surface);
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 0.9rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--mu); cursor: pointer;
+      font-size: 1rem; padding: 0;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover { color: var(--ac); }
+
+    .btn-login {
+      width: 100%;
+      background: var(--ac);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.82rem;
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-login:hover {
+      background: #234830;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(45,90,61,0.3);
+    }
+
+    .btn-login:active { transform: none; }
+
+    .error {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--danger-light);
+      border: 1px solid rgba(192,57,43,0.25);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-bottom: 1.2rem;
+      animation: shake 0.35s ease;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.82rem;
+      color: var(--mu);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover { color: var(--ac); }
+
+    .lock-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--mu);
+      margin-top: 1.8rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-top">
+      <div class="avatar">🔐</div>
+      <h1>Admin Access</h1>
+      <p>Sign in to manage your portfolio</p>
+    </div>
+
+    {% if error %}
+    <div class="error">
+      ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" autocomplete="off">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter username"
+               required autofocus autocomplete="username"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" name="password" id="pw"
+                 placeholder="Enter password" required autocomplete="current-password"/>
+          <button type="button" class="toggle-pw" onclick="togglePw()" title="Show/hide password">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-login">Sign In →</button>
+    </form>
+
+    <a href="/" class="back-link">← Back to portfolio</a>
+
+    <div class="lock-note">
+      🔒 Restricted access — admin only
+    </div>
+  </div>
+
+  <script>
+    function togglePw() {
+      const pw = document.getElementById('pw');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>

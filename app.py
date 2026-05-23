@@ -1,19 +1,25 @@
-"""
-Portfolio Backend — Flask
-Run:   pip install flask  →  python app.py
-Site:  http://localhost:5000
-Admin: http://localhost:5000/admin
-"""
 
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
-import sqlite3, json, os
-from datetime import datetime
+
+from flask import (Flask, request, jsonify, render_template,
+                   redirect, url_for, flash, session)
+import sqlite3, json, os, hashlib
+from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = "deepak-portfolio-secret"
+app.secret_key = "change-this-to-a-long-random-string-in-production"
 
 DB   = "portfolio.db"
 BASE = os.path.dirname(os.path.abspath(__file__))
+
+# ─────────────────────────────────────────────
+#  ADMIN CREDENTIALS — CHANGE THESE
+# ─────────────────────────────────────────────
+ADMIN_USERNAME = "deepak"
+ADMIN_PASSWORD = "deepak@123"      # ← change this to your own password
+# ─────────────────────────────────────────────
+
+
+def _hash(pw): return hashlib.sha256(pw.encode()).hexdigest()
 
 
 # ─── DATABASE ────────────────────────────────
@@ -55,7 +61,7 @@ def init_db():
         );
         """)
 
-        # Seed only if empty
+        # Seed default data only if empty
         if c.execute("SELECT COUNT(*) FROM profile").fetchone()[0] == 0:
             for k, v in {
                 "name":     "DEEPAK BASHYAL",
@@ -121,6 +127,16 @@ def get_all():
     return profile, stats, skills, projects
 
 
+# ─── AUTH ────────────────────────────────────
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("admin_logged_in"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated
+
+
 # ─── VISITOR TRACKING ────────────────────────
 @app.before_request
 def track():
@@ -165,8 +181,37 @@ def contact():
     return jsonify({"ok": True, "message": "Thanks! I'll get back to you soon."})
 
 
-# ─── ADMIN ───────────────────────────────────
+# ─── AUTH ROUTES ─────────────────────────────
+@app.route("/admin/login", methods=["GET", "POST"])
+def login():
+    # Already logged in → go straight to admin
+    if session.get("admin_logged_in"):
+        return redirect(url_for("admin"))
+
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
+            session.permanent = False          # session expires when browser closes
+            return redirect(url_for("admin"))
+        else:
+            error = "Invalid username or password. Please try again."
+
+    return render_template("login.html", error=error)
+
+
+@app.route("/admin/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+# ─── ADMIN DASHBOARD ─────────────────────────
 @app.route("/admin")
+@login_required
 def admin():
     profile, stats, skills, projects = get_all()
     parsed_skills = [(s["category"], json.loads(s["tags"]), s["id"]) for s in skills]
@@ -184,6 +229,7 @@ def admin():
 
 
 @app.route("/admin/save/profile", methods=["POST"])
+@login_required
 def save_profile():
     with db() as c:
         for f in ["name","role","tagline","about","email","github","linkedin"]:
@@ -195,6 +241,7 @@ def save_profile():
 
 
 @app.route("/admin/save/stats", methods=["POST"])
+@login_required
 def save_stats():
     with db() as c:
         c.execute("DELETE FROM stats")
@@ -207,6 +254,7 @@ def save_stats():
 
 
 @app.route("/admin/save/skills", methods=["POST"])
+@login_required
 def save_skills():
     with db() as c:
         c.execute("DELETE FROM skills")
@@ -220,6 +268,7 @@ def save_skills():
 
 
 @app.route("/admin/save/project", methods=["POST"])
+@login_required
 def save_project():
     pid   = request.form.get("id")
     icon  = request.form.get("icon", "📦").strip()
@@ -242,6 +291,7 @@ def save_project():
 
 
 @app.route("/admin/delete/project/<int:pid>", methods=["POST"])
+@login_required
 def delete_project(pid):
     with db() as c:
         c.execute("DELETE FROM projects WHERE id=?", (pid,))
@@ -251,6 +301,7 @@ def delete_project(pid):
 
 
 @app.route("/admin/message/<int:mid>/read", methods=["POST"])
+@login_required
 def mark_read(mid):
     with db() as c:
         c.execute("UPDATE messages SET read=1 WHERE id=?", (mid,))
@@ -259,6 +310,7 @@ def mark_read(mid):
 
 
 @app.route("/admin/message/<int:mid>/delete", methods=["POST"])
+@login_required
 def delete_message(mid):
     with db() as c:
         c.execute("DELETE FROM messages WHERE id=?", (mid,))
@@ -271,5 +323,6 @@ def delete_message(mid):
 if __name__ == "__main__":
     init_db()
     print("\n  🚀  Portfolio  →  http://localhost:5000")
-    print("  ⚙️   Admin      →  http://localhost:5000/admin\n")
+    print("  🔐  Admin      →  http://localhost:5000/admin")
+    # print(f"  👤  Login with: {ADMIN_USERNAME} / {ADMIN_PASSWORD}\n")
     app.run(debug=True, port=5000)
