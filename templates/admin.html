@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Dashboard — Deepak Bashyal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #f5f3ef;
+      --bg2:     #eceae4;
+      --surface: #ffffff;
+      --border:  #e0ddd6;
+      --tx:      #1a1814;
+      --tx2:     #4a4742;
+      --mu:      #8a877f;
+      --ac:      #2d5a3d;
+      --ac2:     #c8a96e;
+      --ac-light:#e8f0eb;
+      --danger:  #c0392b;
+      --danger-light: #fdf0ef;
+      --serif:   'Playfair Display', Georgia, serif;
+      --sans:    'DM Sans', sans-serif;
+      --radius:  10px;
+      --shadow:  0 2px 20px rgba(26,24,20,0.07);
+      --shadow-hover: 0 8px 40px rgba(26,24,20,0.13);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: var(--sans);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.2rem;
+      gap: 2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 2px 0 12px rgba(26,24,20,0.04);
+    }
+
+    .sidebar-brand { padding: 0 0.6rem; }
+
+    .sidebar-brand .logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--tx);
+    }
+
+    .sidebar-brand .logo span { color: var(--ac); }
+
+    .sidebar-brand small {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--mu);
+      margin-top: 0.2rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-group { display: flex; flex-direction: column; gap: 0.2rem; }
+
+    .nav-group-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--mu);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0 0.8rem;
+      margin-bottom: 0.3rem;
+      margin-top: 0.5rem;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.85rem;
+      color: var(--tx2);
+      text-decoration: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: 7px;
+      transition: all 0.18s;
+      font-weight: 400;
+    }
+
+    .sidebar a:hover { background: var(--bg); color: var(--ac); }
+    .sidebar a.active { background: var(--ac-light); color: var(--ac); font-weight: 500; }
+
+    .sidebar a .icon {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg2);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar a.active .icon { background: rgba(45,90,61,0.15); }
+
+    .badge {
+      margin-left: auto;
+      background: var(--ac);
+      color: #fff;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.45rem;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 1.2rem;
+    }
+
+    .sidebar-footer a {
+      font-size: 0.82rem;
+      color: var(--mu);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.8rem;
+      border-radius: 7px;
+      transition: color 0.2s;
+    }
+
+    .sidebar-footer a:hover { color: var(--ac); background: var(--ac-light); }
+
+    /* ── MAIN ── */
+    .main { flex: 1; padding: 2.5rem 3rem; max-width: 100%; overflow-x: hidden; }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 0.3rem;
+    }
+
+    .page-sub { font-size: 0.88rem; color: var(--mu); margin-bottom: 2rem; }
+
+    /* FLASH */
+    .flash {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-radius: 8px;
+      padding: 0.8rem 1.1rem;
+      font-size: 0.87rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid;
+    }
+
+    .flash.success {
+      background: var(--ac-light);
+      border-color: rgba(45,90,61,0.25);
+      color: var(--ac);
+    }
+
+    .flash.error {
+      background: var(--danger-light);
+      border-color: rgba(192,57,43,0.2);
+      color: var(--danger);
+    }
+
+    /* ── OVERVIEW CARDS ── */
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 3rem;
+    }
+
+    .ov-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ov-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+    .ov-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--ac), var(--ac2));
+    }
+
+    .ov-icon {
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ac-light);
+      border-radius: 8px;
+    }
+
+    .ov-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--tx);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .ov-lbl { font-size: 0.78rem; color: var(--mu); }
+
+    /* ── SECTION BLOCK ── */
+    .section-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      scroll-margin-top: 1.5rem;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.3rem 1.8rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .section-head h2 {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--tx);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-head p { font-size: 0.8rem; color: var(--mu); }
+    .section-body { padding: 1.8rem; }
+
+    /* FORM ELEMENTS */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-full { grid-column: 1 / -1; }
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    label {
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--tx2);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    input[type=text], input[type=email], input[type=url],
+    textarea, select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.65rem 0.9rem;
+      color: var(--tx);
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--ac);
+      box-shadow: 0 0 0 3px rgba(45,90,61,0.1);
+      background: var(--surface);
+    }
+
+    textarea { min-height: 88px; resize: vertical; }
+    .hint { font-size: 0.72rem; color: var(--mu); margin-top: 0.2rem; }
+
+    /* BUTTONS */
+    .btn-save {
+      background: var(--ac);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.62rem 1.5rem;
+      font-family: var(--sans);
+      font-size: 0.83rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-save:hover { background: #234830; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(45,90,61,0.3); }
+
+    .btn-add {
+      background: transparent;
+      color: var(--ac);
+      border: 1px dashed rgba(45,90,61,0.4);
+      border-radius: 6px;
+      padding: 0.5rem 1.1rem;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-add:hover { background: var(--ac-light); border-style: solid; }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-danger:hover { background: var(--danger-light); border-color: var(--danger); }
+
+    .btn-sm {
+      background: var(--bg2);
+      color: var(--tx2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.35rem 0.75rem;
+      font-family: var(--sans);
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-sm:hover { border-color: var(--ac); color: var(--ac); background: var(--ac-light); }
+
+    /* INLINE ROWS */
+    .row-list { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1rem; }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 36px;
+      gap: 0.7rem;
+      align-items: center;
+      padding: 0.7rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .skill-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 36px;
+      gap: 0.7rem;
+      align-items: center;
+      padding: 0.7rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .row-del {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      color: var(--mu);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .row-del:hover { background: var(--danger-light); color: var(--danger); border-color: rgba(192,57,43,0.3); }
+
+    /* PROJECT ITEMS */
+    .project-list { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .project-item {
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      overflow: hidden;
+    }
+
+    .project-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.3rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .project-item-head-left {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .project-item-head-left span {
+      font-size: 1.1rem;
+    }
+
+    .project-item-body { padding: 1.3rem; display: none; }
+    .project-item-body.open { display: block; }
+
+    .project-form-2 { display: grid; grid-template-columns: 80px 1fr; gap: 0.8rem; margin-bottom: 0.8rem; }
+    .project-form-half { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem; }
+
+    /* ADD PROJECT */
+    .add-project {
+      border: 2px dashed var(--border);
+      border-radius: 9px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .add-project:focus-within { border-color: rgba(45,90,61,0.4); }
+
+    .add-project-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--mu);
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* TABLE */
+    .table-wrap { overflow: hidden; border-radius: 0; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--mu);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.8rem 1.2rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    td {
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg); }
+
+    .badge-new {
+      background: var(--ac-light);
+      color: var(--ac);
+      border: 1px solid rgba(45,90,61,0.2);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      font-weight: 600;
+    }
+
+    .badge-read { font-size: 0.72rem; color: var(--mu); }
+
+    .msg-preview {
+      color: var(--tx2);
+      font-size: 0.82rem;
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .msg-full {
+      display: none;
+      color: var(--tx2);
+      font-size: 0.83rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      padding: 0.6rem 0;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--mu);
+      font-size: 0.9rem;
+    }
+
+    .empty-state .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    /* VISITOR */
+    .vis-table td {
+      font-size: 0.8rem;
+      color: var(--tx2);
+      font-family: monospace;
+    }
+
+    .vis-table td:first-child { color: var(--tx); font-weight: 500; }
+    .agent-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* CHEVRON */
+    .chevron {
+      width: 18px; height: 18px;
+      color: var(--mu);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .chevron.open { transform: rotate(180deg); }
+
+    svg { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">Deepak <span>Bashyal</span></div>
+    <small>Portfolio Admin</small>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a href="#overview" class="active">
+      <div class="icon">📊</div> Dashboard
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Edit Portfolio</div>
+    <a href="#profile"><div class="icon">👤</div> Profile</a>
+    <a href="#stats"><div class="icon">🔢</div> Stats</a>
+    <a href="#skills"><div class="icon">🛠</div> Skills</a>
+    <a href="#projects"><div class="icon">📦</div> Projects</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Incoming</div>
+    <a href="#messages">
+      <div class="icon">📬</div> Messages
+      {% if unread > 0 %}<span class="badge">{{ unread }}</span>{% endif %}
+    </a>
+    <a href="#visitors"><div class="icon">👁</div> Visitors</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="/" target="_blank">🌐 View Live Site</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">Manage your portfolio content, messages, and visitor data.</div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- OVERVIEW -->
+  <div id="overview" style="scroll-margin-top:1.5rem">
+    <div class="overview">
+      <div class="ov-card">
+        <div class="ov-icon">👁</div>
+        <div class="ov-num">{{ vis_total }}</div>
+        <div class="ov-lbl">Total Visits</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📅</div>
+        <div class="ov-num">{{ vis_today }}</div>
+        <div class="ov-lbl">Visits Today</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">🌍</div>
+        <div class="ov-num">{{ unique_ips }}</div>
+        <div class="ov-lbl">Unique Visitors</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📬</div>
+        <div class="ov-num">{{ unread }}</div>
+        <div class="ov-lbl">Unread Messages</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="section-block" id="profile">
+    <div class="section-head">
+      <h2>👤 Profile</h2>
+      <p>Your name, role, and contact info</p>
+    </div>
+    <div class="section-body">
+      <form method="POST" action="/admin/save/profile">
+        <div class="form-grid">
+          <div class="field"><label>Full Name</label><input type="text" name="name" value="{{ profile.name }}"/></div>
+          <div class="field"><label>Role / Title</label><input type="text" name="role" value="{{ profile.role }}"/></div>
+          <div class="field form-full"><label>Tagline</label><input type="text" name="tagline" value="{{ profile.tagline }}"/></div>
+          <div class="field form-full"><label>About Paragraph</label><textarea name="about" style="min-height:110px">{{ profile.about }}</textarea></div>
+          <div class="field"><label>Email</label><input type="email" name="email" value="{{ profile.email }}"/></div>
+          <div class="field"><label>GitHub URL</label><input type="url" name="github" value="{{ profile.github }}"/></div>
+          <div class="field form-full"><label>LinkedIn URL</label><input type="url" name="linkedin" value="{{ profile.linkedin }}"/></div>
+        </div>
+        <button type="submit" class="btn-save">💾 Save Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="section-block" id="stats">
+    <div class="section-head">
+      <h2>🔢 Stats</h2>
+      <p>The highlight numbers shown in your About section</p>
+    </div>
+    <div class="section-body">
+      <form method="POST" action="/admin/save/stats">
+        <div class="row-list" id="stat-rows">
+          {% for s in stats %}
+          <div class="stat-row">
+            <input type="text" name="num" value="{{ s.num }}" placeholder="e.g. 3+"/>
+            <input type="text" name="label" value="{{ s.label }}" placeholder="e.g. Years of Experience"/>
+            <button type="button" class="row-del" onclick="this.closest('.stat-row').remove()">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn-add" onclick="addStat()">+ Add Stat</button>
+        <br/>
+        <button type="submit" class="btn-save">💾 Save Stats</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section-block" id="skills">
+    <div class="section-head">
+      <h2>🛠 Skills</h2>
+      <p>Categories and their tags</p>
+    </div>
+    <div class="section-body">
+      <form method="POST" action="/admin/save/skills">
+        <div class="row-list" id="skill-rows">
+          {% for cat, tags, sid in skills %}
+          <div class="skill-row">
+            <input type="text" name="category" value="{{ cat }}" placeholder="Category"/>
+            <input type="text" name="tags" value="{{ tags|join(', ') }}" placeholder="tag1, tag2, tag3"/>
+            <button type="button" class="row-del" onclick="this.closest('.skill-row').remove()">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="hint" style="margin-bottom:.8rem">Separate tags with commas</p>
+        <button type="button" class="btn-add" onclick="addSkill()">+ Add Category</button>
+        <br/>
+        <button type="submit" class="btn-save">💾 Save Skills</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section-block" id="projects">
+    <div class="section-head">
+      <h2>📦 Projects</h2>
+      <p>Click a project to expand and edit</p>
+    </div>
+    <div class="section-body">
+      <div class="project-list">
+        {% for p in projects %}
+        <div class="project-item">
+          <div class="project-item-head" onclick="toggleProject('proj-{{ p.id }}', this)">
+            <div class="project-item-head-left">
+              <span>{{ p.icon }}</span>
+              {{ p.title }}
+            </div>
+            <div style="display:flex;align-items:center;gap:.7rem">
+              <form method="POST" action="/admin/delete/project/{{ p.id }}"
+                    onsubmit="return confirm('Delete this project?')" onclick="event.stopPropagation()">
+                <button class="btn-danger" type="submit">Delete</button>
+              </form>
+              <svg class="chevron" id="chev-proj-{{ p.id }}" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="5 8 10 13 15 8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="project-item-body" id="proj-{{ p.id }}">
+            <form method="POST" action="/admin/save/project">
+              <input type="hidden" name="id" value="{{ p.id }}"/>
+              <div class="project-form-2">
+                <div class="field"><label>Icon</label><input type="text" name="icon" value="{{ p.icon }}"/></div>
+                <div class="field"><label>Title</label><input type="text" name="title" value="{{ p.title }}" required/></div>
+              </div>
+              <div class="field" style="margin-bottom:.8rem">
+                <label>Description</label>
+                <textarea name="desc">{{ p.desc }}</textarea>
+              </div>
+              <div class="field" style="margin-bottom:.8rem">
+                <label>Tech Stack</label>
+                <input type="text" name="stack" value="{{ p.stack }}"/>
+                <span class="hint">Comma-separated: Python, Flask, React</span>
+              </div>
+              <div class="project-form-half">
+                <div class="field"><label>GitHub URL</label><input type="text" name="github" value="{{ p.github }}"/></div>
+                <div class="field"><label>Live URL (optional)</label><input type="text" name="live" value="{{ p.live }}"/></div>
+              </div>
+              <button type="submit" class="btn-save" style="margin-top:.5rem">💾 Save Project</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- ADD NEW -->
+      <div class="add-project" style="margin-top:1.2rem">
+        <div class="add-project-title">+ Add New Project</div>
+        <form method="POST" action="/admin/save/project">
+          <div class="project-form-2">
+            <div class="field"><label>Icon</label><input type="text" name="icon" value="📦"/></div>
+            <div class="field"><label>Title</label><input type="text" name="title" placeholder="My New Project" required/></div>
+          </div>
+          <div class="field" style="margin-bottom:.8rem">
+            <label>Description</label>
+            <textarea name="desc" placeholder="What does this project do?"></textarea>
+          </div>
+          <div class="field" style="margin-bottom:.8rem">
+            <label>Tech Stack</label>
+            <input type="text" name="stack" placeholder="Python, Flask, React"/>
+          </div>
+          <div class="project-form-half">
+            <div class="field"><label>GitHub URL</label><input type="text" name="github" placeholder="https://github.com/..."/></div>
+            <div class="field"><label>Live URL</label><input type="text" name="live" placeholder="https://..."/></div>
+          </div>
+          <button type="submit" class="btn-save">+ Add Project</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="section-block" id="messages">
+    <div class="section-head">
+      <h2>📬 Messages</h2>
+      <p>Contact form submissions from your portfolio</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if messages %}
+            {% for m in messages %}
+            <tr>
+              <td><strong>{{ m.name }}</strong></td>
+              <td style="color:var(--ac);font-size:.82rem">{{ m.email }}</td>
+              <td>
+                <div class="msg-preview" onclick="toggleMsg({{ m.id }})">{{ m.message }}</div>
+                <div class="msg-full" id="msg-{{ m.id }}">{{ m.message }}</div>
+              </td>
+              <td style="color:var(--mu);font-size:.78rem;white-space:nowrap">{{ m.created }}</td>
+              <td>
+                {% if m.read == 0 %}
+                  <span class="badge-new">New</span>
+                {% else %}
+                  <span class="badge-read">Read</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                  <a href="mailto:{{ m.email }}" class="btn-sm">↩ Reply</a>
+                  {% if m.read == 0 %}
+                  <form method="POST" action="/admin/message/{{ m.id }}/read">
+                    <button class="btn-sm" type="submit">✓ Read</button>
+                  </form>
+                  {% endif %}
+                  <form method="POST" action="/admin/message/{{ m.id }}/delete"
+                        onsubmit="return confirm('Delete this message?')">
+                    <button class="btn-danger" type="submit" style="font-size:.72rem;padding:.3rem .6rem">Del</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <div class="empty-icon">📭</div>
+                  No messages yet — share your portfolio and they'll appear here.
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VISITORS -->
+  <div class="section-block" id="visitors">
+    <div class="section-head">
+      <h2>👁 Visitor Log</h2>
+      <p>Last 100 visits to your portfolio</p>
+    </div>
+    <div class="table-wrap">
+      <table class="vis-table">
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Page</th>
+            <th>Browser / Device</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if visitors %}
+            {% for v in visitors %}
+            <tr>
+              <td>{{ v.ip }}</td>
+              <td>{{ v.path }}</td>
+              <td class="agent-cell" title="{{ v.agent }}">{{ v.agent }}</td>
+              <td style="white-space:nowrap;color:var(--mu)">{{ v.created }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4">
+                <div class="empty-state">
+                  <div class="empty-icon">🔍</div>
+                  No visitors logged yet.
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function addStat() {
+  const row = document.createElement('div');
+  row.className = 'stat-row';
+  row.innerHTML = `
+    <input type="text" name="num" placeholder="e.g. 5+"/>
+    <input type="text" name="label" placeholder="e.g. Happy Clients"/>
+    <button type="button" class="row-del" onclick="this.closest('.stat-row').remove()">✕</button>`;
+  document.getElementById('stat-rows').appendChild(row);
+  row.querySelector('input').focus();
+}
+
+function addSkill() {
+  const row = document.createElement('div');
+  row.className = 'skill-row';
+  row.innerHTML = `
+    <input type="text" name="category" placeholder="Category"/>
+    <input type="text" name="tags" placeholder="tag1, tag2, tag3"/>
+    <button type="button" class="row-del" onclick="this.closest('.skill-row').remove()">✕</button>`;
+  document.getElementById('skill-rows').appendChild(row);
+  row.querySelector('input').focus();
+}
+
+function toggleProject(id, header) {
+  const body  = document.getElementById(id);
+  const chev  = document.getElementById('chev-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+function toggleMsg(id) {
+  const el = document.getElementById('msg-' + id);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+// Active sidebar link on scroll
+const sections = document.querySelectorAll('[id]');
+const links = document.querySelectorAll('.sidebar a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => io.observe(s));
+</script>
+
+</body>
+</html>

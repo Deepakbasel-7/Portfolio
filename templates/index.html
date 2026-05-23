@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{{NAME}} — Portfolio</title>
+  <title>{{ profile.name }} — Portfolio</title>
   <link rel="stylesheet" href="/static/style.css"/>
 </head>
 <body>
 
 <nav>
-  <div class="logo">&lt;{{FIRST}} /&gt;</div>
+  <div class="logo">{{ profile.name.split()[0] }} <span>{{ profile.name.split()[-1] }}</span></div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
@@ -21,12 +21,30 @@
 
 <!-- HERO -->
 <section id="hero">
-  <p class="hero-tag">$ init_portfolio.py — {{ROLE}}</p>
-  <h1 class="hero-name">{{FIRST}}<br><em>{{LAST}}</em></h1>
-  <p class="hero-sub">{{TAGLINE}}</p>
-  <div class="hero-btns">
-    <a href="#projects" class="btn btn-p">View My Work</a>
-    <a href="#contact"  class="btn btn-g">Get in Touch</a>
+  <div class="hero-left">
+    <div class="hero-eyebrow">{{ profile.role }}</div>
+    <h1 class="hero-name">
+      {{ profile.name.split()[0] }}<br>
+      <em>{{ profile.name.split()[-1] if profile.name.split()|length > 1 else "" }}</em>
+    </h1>
+    <p class="hero-sub">{{ profile.tagline }}</p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-p">View My Work</a>
+      <a href="#contact"  class="btn btn-g">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    {% for s in stats %}
+    <div class="hero-card">
+      <div class="hero-card-icon">
+        {% if loop.index == 1 %}📅{% elif loop.index == 2 %}🚀{% elif loop.index == 3 %}💡{% else %}🔧{% endif %}
+      </div>
+      <div class="hero-card-text">
+        <strong>{{ s.num }} {{ s.label }}</strong>
+        <span>and counting</span>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </section>
 
@@ -34,11 +52,18 @@
 
 <!-- ABOUT -->
 <section class="wrap" id="about">
-  <p class="s-label">01 // about_me</p>
+  <p class="s-label">About Me</p>
   <h2 class="s-title">Who I Am</h2>
   <div class="about-grid">
-    <div class="about-text"><p>{{ABOUT}}</p></div>
-    <div class="stats">{{STATS_HTML}}</div>
+    <div class="about-text"><p>{{ profile.about }}</p></div>
+    <div class="stats">
+      {% for s in stats %}
+      <div class="stat-card">
+        <div class="stat-num">{{ s.num }}</div>
+        <div class="stat-lbl">{{ s.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 </section>
 
@@ -46,32 +71,58 @@
 
 <!-- SKILLS -->
 <section class="wrap" id="skills">
-  <p class="s-label">02 // skill_set</p>
+  <p class="s-label">Skill Set</p>
   <h2 class="s-title">What I Work With</h2>
-  <div class="skills-grid">{{SKILLS_HTML}}</div>
+  <div class="skills-grid">
+    {% for cat, tags, sid in skills %}
+    <div class="skill-group">
+      <div class="skill-title">{{ cat }}</div>
+      <div class="skill-tags">
+        {% for t in tags %}<span class="tag">{{ t }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </section>
 
 <hr class="div"/>
 
 <!-- PROJECTS -->
 <section class="wrap" id="projects">
-  <p class="s-label">03 // projects</p>
+  <p class="s-label">Projects</p>
   <h2 class="s-title">Things I've Built</h2>
-  <div class="cards">{{PROJECTS_HTML}}</div>
+  <div class="cards">
+    {% for p in projects %}
+    <div class="card">
+      <div class="card-top">
+        <div class="card-icon">{{ p.icon }}</div>
+        <div class="card-links">
+          {% if p.github %}<a href="{{ p.github }}" target="_blank">GitHub ↗</a>{% endif %}
+          {% if p.live   %}<a href="{{ p.live }}"   target="_blank">Live ↗</a>{% endif %}
+        </div>
+      </div>
+      <div class="card-title">{{ p.title }}</div>
+      <p class="card-desc">{{ p.desc }}</p>
+      <div class="card-stack">
+        {% for s in p.stack_list %}<span class="stack-tag">{{ s }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </section>
 
 <hr class="div"/>
 
 <!-- RESUME -->
 <section class="wrap" id="resume">
-  <p class="s-label">04 // resume</p>
+  <p class="s-label">Resume</p>
   <h2 class="s-title">My Resume</h2>
   <div class="resume-box">
     <div>
       <h3>Full CV — Updated 2025</h3>
       <p>A complete overview of my work experience, education, and accomplishments.</p>
     </div>
-    <a href="/static/resume.pdf" class="btn btn-p" download>↓ Download PDF</a>
+    <a href="/static/resume.pdf" class="btn btn-p" download="Deepak_Bashyal_Resume.pdf">↓ Download PDF</a>
   </div>
 </section>
 
@@ -79,29 +130,35 @@
 
 <!-- CONTACT -->
 <section class="wrap" id="contact">
-  <p class="s-label">05 // contact</p>
+  <p class="s-label">Contact</p>
   <h2 class="s-title">Get In Touch</h2>
   <div class="contact-grid">
     <div class="contact-info">
       <p>Whether you have a project in mind, a role to fill, or just want to connect — my inbox is always open. I'll respond within 24 hours.</p>
       <div class="c-links">
-        <a href="mailto:{{EMAIL}}" class="c-link"><div class="c-ico">✉</div>{{EMAIL}}</a>
-        <a href="{{GITHUB}}" target="_blank" class="c-link"><div class="c-ico">⌥</div>{{GITHUB_SHORT}}</a>
-        <a href="{{LINKEDIN}}" target="_blank" class="c-link"><div class="c-ico">in</div>{{LINKEDIN_SHORT}}</a>
+        <a href="mailto:{{ profile.email }}" class="c-link">
+          <div class="c-ico">✉</div>{{ profile.email }}
+        </a>
+        <a href="{{ profile.github }}" target="_blank" class="c-link">
+          <div class="c-ico">⌥</div>{{ profile.github.replace("https://","") }}
+        </a>
+        <a href="{{ profile.linkedin }}" target="_blank" class="c-link">
+          <div class="c-ico">in</div>{{ profile.linkedin.replace("https://","") }}
+        </a>
       </div>
     </div>
-    <form class="form" onsubmit="send(event)">
-      <div><label>Name</label><input type="text" placeholder="Jane Smith" required/></div>
-      <div><label>Email</label><input type="email" placeholder="jane@example.com" required/></div>
-      <div><label>Message</label><textarea placeholder="Tell me about your project..." required></textarea></div>
+    <form class="form" onsubmit="sendMessage(event)">
+      <div><label>Name</label><input type="text" id="f-name" placeholder="Jane Smith" required/></div>
+      <div><label>Email</label><input type="email" id="f-email" placeholder="jane@example.com" required/></div>
+      <div><label>Message</label><textarea id="f-msg" placeholder="Tell me about your project..." required></textarea></div>
       <button type="submit" class="btn btn-p" style="width:fit-content">Send Message →</button>
     </form>
   </div>
 </section>
 
 <footer>
-  <p>Built with <span>Python</span> + zero dependencies</p>
-  <p>© 2025 <span>{{NAME}}</span></p>
+  <p>Built with <span>Python & Flask</span></p>
+  <p>© 2025 <span>{{ profile.name }}</span></p>
 </footer>
 
 <script src="/static/script.js"></script>
