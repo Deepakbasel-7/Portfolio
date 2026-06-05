@@ -14,7 +14,7 @@ DB   = "portfolio.db"
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 # ─────────────────────────────────────────────
-#  ADMIN CREDENTIALS — CHANGE THESE
+#  ADMIN CREDENTIALS 
 # ─────────────────────────────────────────────
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")

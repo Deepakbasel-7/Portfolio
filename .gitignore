@@ -2,4 +2,9 @@
 venv/
 .venv/
 env/
+# Ignore environment variable files
 .env
+# Ignore Python bytecode files
+__pycache__/
+# Ignore database files
+portfolio.db
