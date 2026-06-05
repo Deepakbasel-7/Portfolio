@@ -6,6 +6,7 @@ import sqlite3, json, os, hashlib
 from functools import wraps
 from dotenv import load_dotenv
 load_dotenv()
+DB_PATH = os.environ.get("DB_PATH", os.path.join(BASE, "portfolio.db"))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "fallback-only-for-dev")
@@ -26,7 +27,7 @@ def _hash(pw): return hashlib.sha256(pw.encode()).hexdigest()
 
 # ─── DATABASE ────────────────────────────────
 def db():
-    conn = sqlite3.connect(os.path.join(BASE, DB))
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
