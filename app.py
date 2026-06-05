@@ -6,13 +6,14 @@ import sqlite3, json, os, hashlib
 from functools import wraps
 from dotenv import load_dotenv
 load_dotenv()
-DB_PATH = os.environ.get("DB_PATH", os.path.join(BASE, "portfolio.db"))
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "fallback-only-for-dev")
 
 DB   = "portfolio.db"
 BASE = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.environ.get("DB_PATH", os.path.join(BASE, "portfolio.db"))
 
 # ─────────────────────────────────────────────
 #  ADMIN CREDENTIALS 
@@ -323,8 +324,9 @@ def delete_message(mid):
 
 
 # ─────────────────────────────────────────────
+init_db()
 if __name__ == "__main__":
-    init_db()
+   
     print("\n  🚀  Portfolio  →  http://deepakbashyal.com.np")
     print("  🔐  Admin      →  http://deepakbashyal.com.np/admin")
     # print(f"  👤  Login with: {ADMIN_USERNAME} / {ADMIN_PASSWORD}\n")
