@@ -4,9 +4,11 @@ from flask import (Flask, request, jsonify, render_template,
                    redirect, url_for, flash, session)
 import sqlite3, json, os, hashlib
 from functools import wraps
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "change-this-to-a-long-random-string-in-production"
+app.secret_key = os.environ.get("SECRET_KEY", "fallback-only-for-dev")
 
 DB   = "portfolio.db"
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -14,8 +16,8 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 # ─────────────────────────────────────────────
 #  ADMIN CREDENTIALS — CHANGE THESE
 # ─────────────────────────────────────────────
-ADMIN_USERNAME = "deepak"
-ADMIN_PASSWORD = "deepak@123"      # ← change this to your own password
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
 # ─────────────────────────────────────────────
 
 
@@ -322,7 +324,7 @@ def delete_message(mid):
 # ─────────────────────────────────────────────
 if __name__ == "__main__":
     init_db()
-    print("\n  🚀  Portfolio  →  http://localhost:5000")
-    print("  🔐  Admin      →  http://localhost:5000/admin")
+    print("\n  🚀  Portfolio  →  http://deepakbashyal.com.np")
+    print("  🔐  Admin      →  http://deepakbashyal.com.np/admin")
     # print(f"  👤  Login with: {ADMIN_USERNAME} / {ADMIN_PASSWORD}\n")
     app.run(debug=True, port=5000)
